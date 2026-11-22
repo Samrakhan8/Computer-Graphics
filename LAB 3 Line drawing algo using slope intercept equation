@@ -1,0 +1,65 @@
+#include <GL/glut.h>
+#include <cmath>
+#include <iostream>
+
+int x0_pt = 20, y0_pt = 30, x1_pt = 120, y1_pt = 90;
+
+void draw_pixel(int x, int y) {
+    glPointSize(3.0f);
+    glBegin(GL_POINTS);
+        glVertex2i(x, y);
+    glEnd();
+}
+
+void slopeInterceptLine(int x0, int y0, int x1, int y1) {
+    float dx = x1 - x0;
+    float dy = y1 - y0;
+
+    // Handle vertical line
+    if (dx == 0) {
+        int y_start = std::min(y0, y1);
+        int y_end   = std::max(y0, y1);
+        for (int y = y_start; y <= y_end; y++) draw_pixel(x0, y);
+        return;
+    }
+
+    float m = dy / dx;
+    float c = y0 - m * x0;
+
+    if (std::abs(m) <= 1.0f) {
+        // Step along X
+        int start_x = std::min(x0, x1);
+        int end_x   = std::max(x0, x1);
+        for (int x = start_x; x <= end_x; x++) {
+            int y = (int)std::round(m * x + c);
+            draw_pixel(x, y);
+        }
+    } else {
+        // Step along Y to prevent gaps when slope > 1
+        int start_y = std::min(y0, y1);
+        int end_y   = std::max(y0, y1);
+        for (int y = start_y; y <= end_y; y++) {
+            int x = (int)std::round((y - c) / m);
+            draw_pixel(x, y);
+        }
+    }
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(0.0f, 1.0f, 0.8f); // Cyan
+    slopeInterceptLine(x0_pt, y0_pt, x1_pt, y1_pt);
+    glFlush();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutCreateWindow("Lab 3: Slope-Intercept Line Algorithm");
+    glClearColor(0, 0, 0, 1);
+    gluOrtho2D(0, 150, 0, 150);
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}

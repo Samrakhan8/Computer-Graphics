@@ -1,0 +1,75 @@
+#include <GL/glut.h>
+#include <iostream>
+#include <cmath>
+
+// Global variables for endpoints
+int x0_pt = 50, y0_pt = 50;
+int x1_pt = 300, y1_pt = 200;
+
+// Function to plot a single pixel in OpenGL
+void drawPixel(int x, int y) {
+    glBegin(GL_POINTS);
+        glVertex2i(x, y);
+    glEnd();
+}
+
+// Generalized Bresenham's Line Algorithm (Handles all Octants/Slopes)
+void bresenhamLine(int x1, int y1, int x2, int y2) {
+    int dx = std::abs(x2 - x1);
+    int dy = std::abs(y2 - y1);
+    
+    // Determine the step direction (+1 or -1) for x and y
+    int sx = (x1 < x2) ? 1 : -1;
+    int sy = (y1 < y2) ? 1 : -1;
+    
+    int err = dx - dy; // Initial decision parameter
+    
+    while (true) {
+        drawPixel(x1, y1); // Plot current pixel
+        
+        // Stop when endpoint is reached
+        if (x1 == x2 && y1 == y2) break;
+                int e2 = 2 * err;
+                // Step in x-direction
+        if (e2 > -dy) {
+            err -= dy;
+            x1 += sx;
+        }
+                // Step in y-direction
+        if (e2 < dx) {
+            err += dx;
+            y1 += sy;
+        }
+    }
+}
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0, 1.0, 1.0); // White color for the line
+
+    // Call Bresenham's Algorithm
+    bresenhamLine(x0_pt, y0_pt, x1_pt, y1_pt);
+    
+    glFlush();
+}
+
+void init() {
+    glClearColor(0.0, 0.0, 0.0, 1.0); // Black background
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    
+    // Set 2D Orthographic viewing region (window dimensions: 500x500)
+    gluOrtho2D(0, 500, 0, 500);
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Bresenham's Line Drawing Algorithm");
+    
+    init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}

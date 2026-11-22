@@ -1,0 +1,63 @@
+#include <GL/glut.h>
+#include <math.h>
+
+void init() {
+    glClearColor(0.06f, 0.09f, 0.16f, 1.0f); // Dark background #0F172A
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, 500.0, 0.0, 500.0);       // 2D Cartesian Orthogonal Viewport
+}
+
+void drawCircle(float cx, float cy, float r, int num_segments) {
+    glBegin(GL_LINE_LOOP);
+    glColor3f(0.22f, 0.74f, 0.97f);          // Sky Blue
+    for (int i = 0; i < num_segments; i++) {
+        float theta = 2.0f * 3.1415926f * (float)i / (float)num_segments;
+        float x = r * cosf(theta);
+        float y = r * sinf(theta);
+        glVertex2f(cx + x, cy + y);
+    }
+    glEnd();
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // 1. Draw Points
+    glPointSize(7.0f);
+    glBegin(GL_POINTS);
+    glColor3f(0.0f, 1.0f, 0.8f);             // Teal
+    glVertex2i(50, 400); glVertex2i(70, 420); glVertex2i(90, 390);
+    glEnd();
+
+    // 2. Draw Lines
+    glLineWidth(3.0f);
+glBegin(GL_LINES);
+    glColor3f(1.0f, 0.0f, 0.5f);             // Deep Pink
+    glVertex2i(100, 100); glVertex2i(250, 300);
+    glVertex2i(250, 300); glVertex2i(400, 150);
+    glEnd();
+
+    // 3. Draw Filled Triangle
+    glBegin(GL_TRIANGLES);
+    glColor3f(0.95f, 0.75f, 0.05f);          // Golden Amber
+    glVertex2i(300, 350); glVertex2i(450, 450); glVertex2i(480, 300);
+    glEnd();
+
+    // 4. Draw Circle
+    drawCircle(200.0f, 380.0f, 50.0f, 60);
+
+    glFlush();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(550, 500);
+    glutInitWindowPosition(150, 150);
+    glutCreateWindow("Lab 2: Basic OpenGL Primitives");
+    init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}
